@@ -1,0 +1,25 @@
+-- 2. Creare il contained database
+CREATE DATABASE [itsday2db]
+CONTAINMENT = PARTIAL;
+
+-- Da lanciare solo se il comando 2 va in errore 
+-- 1. Abilitare i contained databases a livello di server
+-- EXEC sp_configure 'contained database authentication', 1;
+-- RECONFIGURE;
+
+CREATE USER [day2Migrator] WITH PASSWORD = 'MigratorStrongP@ss!';
+ALTER ROLE db_ddladmin ADD MEMBER [day2Migrator];
+ALTER ROLE db_datareader ADD MEMBER [day2Migrator];
+ALTER ROLE db_datawriter ADD MEMBER [day2Migrator];
+
+CREATE USER [day2User] WITH PASSWORD = 'UserStrongP@ss!';
+GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO [day2User];
+
+
+
+
+
+
+dotnet ef migrations add Init --context ITS.Day2.Repositories.Services.AppDbContext -p ITS.Day2.Repositories -s ITS.Day2.Repositories.Migrations
+-- spostarsi nella folder del progetto migrations
+dotnet ef database update
