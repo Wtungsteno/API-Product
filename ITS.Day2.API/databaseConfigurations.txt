@@ -1,0 +1,40 @@
+CREATE DATABASE [itsday2db]
+CONTAINMENT = PARTIAL;
+ 
+-- Da lanciare solo se il comando di creazione database va in errore
+-- Abilitare i containeddatabases a livello di server
+-- EXEC sp_configure'containeddatabase authentication', 1;
+-- RECONFIGURE;
+ 
+CREATE USER [day2Migrator] WITH PASSWORD = 'MigratorStrongP@ss!';
+ALTER ROLE db_ddladminADD MEMBER [day2Migrator];
+ALTER ROLE db_datareaderADD MEMBER [day2Migrator];
+ALTER ROLE db_datawriterADD MEMBER [day2Migrator];
+ 
+CREATE USER [day2User] WITH PASSWORD = 'UserStrongP@ss!';
+GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dboTO [day2User];
+
+
+-- Comandi corretti:
+
+CREATE DATABASE [itsday2db]
+CONTAINMENT = PARTIAL;
+
+EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+
+EXEC sp_configure'contained database authentication', 1;
+RECONFIGURE;
+
+USE [itsday2db];
+
+CREATE USER [day2Migrator] WITH PASSWORD = 'MigratorStrongP@ss!';
+
+EXEC sp_addrolemember 'db_ddladmin', 'day2Migrator';
+EXEC sp_addrolemember 'db_datareader', 'day2Migrator';
+EXEC sp_addrolemember 'db_datawriter', 'day2Migrator';
+
+CREATE USER [day2User] WITH PASSWORD = 'UserStrongP@ss!';
+
+EXEC sp_addrolemember 'db_datareader', 'day2User';
+EXEC sp_addrolemember 'db_datawriter', 'day2User';
